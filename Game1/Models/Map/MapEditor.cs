@@ -12,22 +12,18 @@ namespace Game1.Models.Map
 
     internal class MapEditor
     {
-        private TetrisMap _map;
-        public TetrisMap Map
-        {
-            get => _map; //TODO: проверить, можно ли будет менять данные у карты через get извне
-        }
+        public TetrisMap Map { get; }
 
         public MapEditor()
         {
-            _map = new TetrisMap();
+            Map = new TetrisMap();
         }
 
         public void AddBlocksToMap(Point[] pointsToAdd)
         {
             foreach (var point in pointsToAdd)
             {
-                _map[point.X][point.Y] = FieldValue.Block;
+                Map[point.X][point.Y] = FieldValue.Block;
             }
         }
     }

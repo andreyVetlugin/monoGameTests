@@ -5,22 +5,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Game1.Models.Map;
 
 namespace Game1
 {
     internal class FigureMover
     {
         // подписаться на событие нажатие клавиш движения\ротейта
-
-
-        private CollissionChecker;
+        private CollisionChecker _collisionChecker;
         public FigureMover() { }
         public void RotateFigure(Figure figure)
         { 
             //..
             int a = 0;
             int b = 0;
-            figure.ChangeMask(RotateDirection.counterClockWise);
+            figure.ChangeMaskByRotating();.ChangeMask(RotateDirection.counterClockWise);
         }
         public void MoveFigure(Figure figure) 
         {
