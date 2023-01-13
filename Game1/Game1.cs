@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Game1.Models.Figure;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -9,6 +10,9 @@ namespace Game1
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Texture2D ballTexture;
+        private FigureGenerator figureGenerator;
+        private Figure currentFigure;
+
 
         public Game1()
         {
@@ -45,9 +49,10 @@ namespace Game1
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            _spriteBatch.Draw(ballTexture, new Vector2(2, 0), Color.White);
+            var rectangle = new Texture2D(GraphicsDevice, 10, 10);
+            _spriteBatch.Draw(rectangle,new Rectangle(), Color.Black);
+            // TODO: Add your drawing code here
             _spriteBatch.End();
             base.Draw(gameTime);
         }
