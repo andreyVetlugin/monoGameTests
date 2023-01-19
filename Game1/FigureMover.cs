@@ -17,14 +17,15 @@ namespace Game1
         public void RotateFigure(Figure figure)
         { 
             //..
+            throw new NotImplementedException();
             int a = 0;
             int b = 0;
-            figure.ChangeMaskByRotating();.ChangeMask(RotateDirection.counterClockWise);
+            //figure.ChangeMaskByRotating();.ChangeMask(RotateDirection.counterClockWise);
         }
         public void MoveFigure(Figure figure) 
         {
             var direction = new Point(0, -1);
-            figure.ChangeCoordinate(direction);
+            //figure.ChangeCoordinate(direction);
             //collitionCheck;
 
         }
