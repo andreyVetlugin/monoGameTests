@@ -13,7 +13,7 @@ namespace Game1
         private Texture2D ballTexture;
         private FigureGenerator figureGenerator;
         private Figure currentFigure;
-        private InGameDisplayInfo _displayInfo;
+        private InGameDisplayData _displayInfo;
 
         public Game1()
         {
