@@ -1,4 +1,6 @@
-﻿using Game1.Views;
+﻿using Game1.Models.Figure;
+using Game1.Models.Map;
+using Game1.Views;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -9,7 +11,7 @@ namespace Game1
 
         private GraphicsDeviceManager _graphics { get; set; }
         private InGameDisplayInfo _displayInfo { get; set; }
-        private InGameDisplayData _displayData { get; set; }
+        private InGameDisplayData _displayData { get; set; } // any property cannt be null.. get instance by default
 
         private SpriteBatch _spriteBatch { get; set; }
         private Texture2D _whiteRectangle { get; set; }
@@ -30,6 +32,14 @@ namespace Game1
             _graphics.PreferredBackBufferHeight = 800;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            _displayData = new InGameDisplayData();
+
+
+            _displayData.TetrisFigure = new Figure(FigureType.I, new Point(5, 5));
+            _displayData.TetrisFigure.FigureMask.Points.Add(new Point(0, 0));
+            _displayData.TetrisFigure.FigureMask.Points.Add(new Point(1, 1));
+            _displayData.TetrisFigure.FigureMask.Points.Add(new Point(0, 1));
         }
 
         protected override void LoadContent()
@@ -60,17 +70,37 @@ namespace Game1
             GraphicsDevice.Clear(Color.White);
             _spriteBatch.Begin();
 
+            ////////Draw field////////
+
+
             for (int i = 0; i < _mapSize.X + 1; i++)
             {
-                _spriteBatch.Draw(_whiteRectangle, new Rectangle(StartDrawPoint.X + i*_displayInfo.CellSize, StartDrawPoint.Y,
+                _spriteBatch.Draw(_whiteRectangle, new Rectangle(StartDrawPoint.X + i * _displayInfo.CellSize, StartDrawPoint.Y,
                     _displayInfo.CellThickness, _displayInfo.CellSize * _mapSize.Y + _displayInfo.CellThickness), _displayInfo.BorderCellColor);
             }
 
-            for (int i = 0; i < _mapSize.Y + 1 ; i++)
+            for (int i = 0; i < _mapSize.Y + 1; i++)
             {
                 _spriteBatch.Draw(_whiteRectangle, new Rectangle(StartDrawPoint.X, StartDrawPoint.Y + i * _displayInfo.CellSize,
-                    _displayInfo.CellSize * _mapSize.X  + _displayInfo.CellThickness, _displayInfo.CellThickness), _displayInfo.BorderCellColor);
+                    _displayInfo.CellSize * _mapSize.X + _displayInfo.CellThickness, _displayInfo.CellThickness), _displayInfo.BorderCellColor);
             }
+
+
+            ////////Draw figure////////
+
+
+            foreach (var figurePoint in _displayData.TetrisFigure.GetProjectFigureToMap(new TetrisMap()))
+            {
+                var coords = figurePoint * new Point(_displayInfo.CellSize);
+                var drawRectangleCoordinates = new Rectangle(
+                    StartDrawPoint.X + coords.X + _displayInfo.CellThickness,
+                    StartDrawPoint.Y + coords.Y + _displayInfo.CellThickness,
+                    _displayInfo.CellSize - _displayInfo.CellThickness,
+                    _displayInfo.CellSize - _displayInfo.CellThickness);
+                _spriteBatch.Draw(_whiteRectangle, drawRectangleCoordinates, _displayInfo.FigureBlockColor);
+            }
+
+
 
 
             //// Option One (if you have integer size and coordinates)

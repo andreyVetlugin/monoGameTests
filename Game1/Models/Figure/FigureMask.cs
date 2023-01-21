@@ -37,6 +37,7 @@ namespace Game1.Models.Figure
         public FigureMask(FigureType type)
         {
             FigureType = type;
+            //_points = new List<Point>();
             Points = new List<Point>();
             //TODO: fill _points by figureType
             //TODO: coordinates verification

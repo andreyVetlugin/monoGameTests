@@ -41,6 +41,12 @@ namespace Game1.Models.Figure
                 }
             }
         }
+        public Figure(FigureType figureType, Point startCoordinate)
+        {
+            _figureMask = new FigureMask(figureType);
+            _coordinate = startCoordinate;
+        }
+
         public Figure(FigureType figureType)
         {
             _figureMask = new FigureMask(figureType);
@@ -53,8 +59,11 @@ namespace Game1.Models.Figure
 
         public List<Point> GetProjectFigureToMap(TetrisMap map)
         {
-            // coords = figureMask.foreach(mask => mask+coord)
-            throw new NotImplementedException();
+            var coords = _figureMask.Points.Select(x => _coordinate + x).ToList();
+            return coords;
+
+            // TODO: продумать нужен ли аргумент tetrisMap??? скорее всего да 
+            // TODO: возможно проверку коллизии вызывать здесь throw new NotImplementedException();
         }
 
         public object Clone()
