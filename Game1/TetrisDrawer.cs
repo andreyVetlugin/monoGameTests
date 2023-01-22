@@ -19,7 +19,7 @@ namespace Game1
         private Point _mapSize { get; set; } = new Point(10, 20);// TODO: передавать через DI с другой старотовой инфой. Класс GameInitInfo?
         public Point StartDrawPoint { get; set; } = new Point(0, 0); // как и где контролировать? как минимум передавать в конструктор.
 
-        public TetrisDrawer(InGameDisplayInfo displayInfo,/* InGameDisplayData displayData change to initGameData,*/ Point mapSize, Point startDrawPoint)
+        public TetrisDrawer(InGameDisplayInfo displayInfo, InGameDisplayData displayData /*change to initGameData*/, Point mapSize, Point startDrawPoint)
         {
             _displayInfo = displayInfo;
             //_displayData = displayData;
@@ -33,13 +33,13 @@ namespace Game1
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
-            _displayData = new InGameDisplayData();
+            _displayData = displayData;
 
 
-            _displayData.TetrisFigure = new Figure(FigureType.I, new Point(5, 5));
-            _displayData.TetrisFigure.FigureMask.Points.Add(new Point(0, 0));
-            _displayData.TetrisFigure.FigureMask.Points.Add(new Point(1, 1));
-            _displayData.TetrisFigure.FigureMask.Points.Add(new Point(0, 1));
+            //_displayData.TetrisFigure = new Figure(FigureType.I, new Point(5, 5));
+            //_displayData.TetrisFigure.FigureMask.Points.Add(new Point(0, 0));
+            //_displayData.TetrisFigure.FigureMask.Points.Add(new Point(1, 1));
+            //_displayData.TetrisFigure.FigureMask.Points.Add(new Point(0, 1));
         }
 
         protected override void LoadContent()
@@ -89,7 +89,7 @@ namespace Game1
             ////////Draw figure////////
 
 
-            foreach (var figurePoint in _displayData.TetrisFigure.GetProjectFigureToMap(new TetrisMap()))
+            foreach (var figurePoint in _displayData.TetrisFigure.GetProjectFigureToMap())
             {
                 var coords = figurePoint * new Point(_displayInfo.CellSize);
                 var drawRectangleCoordinates = new Rectangle(

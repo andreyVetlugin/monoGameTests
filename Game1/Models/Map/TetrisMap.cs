@@ -25,6 +25,23 @@ namespace Game1.Models.Map
             set => _map[index] = value;
         }
 
+        public List<Point> GetFilledCellsCoordinates()
+        {
+            var filledCellsCoords = new List<Point>();
+            for (int x = 0; x < _map.Count; x++)
+            {
+                for (int y = 0; y < _map[x].Count; y++)
+                {
+                    if (_map[x][y] == FieldValue.Block)
+                    {
+                        filledCellsCoords.Add(new(x, y));
+                    }
+                }
+            }
+
+            return filledCellsCoords;
+        }
+
         public TetrisMap()
         {
             _map = Enumerable.Range(0, _mapSize.X)

@@ -11,7 +11,7 @@ namespace Game1
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Texture2D ballTexture;
-        private FigureGenerator figureGenerator;
+        private FigureManager figureGenerator;
         private Figure currentFigure;
         private InGameDisplayData _displayInfo;
 

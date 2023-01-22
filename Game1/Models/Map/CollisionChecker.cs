@@ -4,24 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Game1.Models.Figure;
+using Microsoft.Xna.Framework;
 
 namespace Game1.Models.Map
 {
     internal class CollisionChecker
     {
-        public bool CheckCollision(int[,] map, Figure.Figure figure)
+        public bool CheckCollision(TetrisMap map, Figure.Figure figure)
         {
-            //for (var i = 0; i < figure.FigureMask.GetLength(0); i++)
-            //{
-            //    for (var j = 0; j < figure.FigureMask.GetLength(1); j++)
-            //    {
+            var filledCellsFromMap = map.GetFilledCellsCoordinates();
+            var figurePoints = figure.GetProjectFigureToMap();
 
-            //        //map[figure.Coordinate.X + figure.FigureMask[i,j]]
-            //        return true;
-            //    }
-            //}
-            //
-            return true;
+            if (figurePoints.Intersect(filledCellsFromMap).Count() != 0)
+            {
+                return true;
+            }
+            return false;
         }
 
     }

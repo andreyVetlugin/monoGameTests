@@ -56,14 +56,18 @@ namespace Game1.Models.Figure
         {
 
         }
-
-        public List<Point> GetProjectFigureToMap(TetrisMap map)
+        
+        public List<Point> GetProjectFigureToMap()
         {
             var coords = _figureMask.Points.Select(x => _coordinate + x).ToList();
             return coords;
 
+            // step2: удалить функцию и перенести в отдельный сервис, который будет принимать фигуру и карту, отдавать проекцию на карту? или менять саму карту? доступ к серсвису через DI
+
+            
             // TODO: продумать нужен ли аргумент tetrisMap??? скорее всего да 
             // TODO: возможно проверку коллизии вызывать здесь throw new NotImplementedException();
+            // НА TODO ответ - НЕТ!!!!!! 
         }
 
         public object Clone()
@@ -75,5 +79,10 @@ namespace Game1.Models.Figure
             };
             return newFigure;
         }
+
+        //private FigureMask FillFigureMaskByType()
+        //{
+            
+        //}
     }
 }

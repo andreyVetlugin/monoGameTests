@@ -37,8 +37,35 @@ namespace Game1.Models.Figure
         public FigureMask(FigureType type)
         {
             FigureType = type;
-            //_points = new List<Point>();
-            Points = new List<Point>();
+            _points = new List<Point>();
+
+            switch (type)
+            {
+                case FigureType.I:
+                    _points.AddRange(new List<Point> { new(0, 1), new(0, 0), new(0, -1), new(0, -2) });
+                    break;
+                case FigureType.J:
+                    _points.AddRange(new List<Point> { new(0, 1), new(0, 0), new(0, -1), new(-1, -1) });
+                    break;
+                case FigureType.L:
+                    _points.AddRange(new List<Point> { new(0, 1), new(0, 0), new(0, -1), new(1, -1) });
+                    break;
+                case FigureType.O:
+                    _points.AddRange(new List<Point> { new(0, 1), new(0, 0), new(1, 0), new(1, 1) });
+                    break;
+                case FigureType.S:
+                    _points.AddRange(new List<Point> { new(0, 1), new(0, 0), new(1, 1), new(-1, 0) });
+                    break;
+                case FigureType.T:
+                    _points.AddRange(new List<Point> { new(0, 1), new(0, 0), new(1, 0), new(-1, 0) });
+                    break;
+                case FigureType.Z:
+                    _points.AddRange(new List<Point> { new(0, 1), new(0, 0), new(-1, 1), new(1, 0) });
+                    break;
+            }
+
+
+
             //TODO: fill _points by figureType
             //TODO: coordinates verification
         }
