@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Game1.Models.Map;
+using Game1.Views;
 
 namespace Game1
 {
@@ -13,21 +14,32 @@ namespace Game1
     {
         // подписаться на событие нажатие клавиш движения\ротейта
         private CollisionChecker _collisionChecker;
-        public FigureMover() { }
+
+        public FigureMover()
+        {
+            _collisionChecker = new CollisionChecker();
+            //TODO: сделать в DI
+        }
         public void RotateFigure(Figure figure)
-        { 
+        {
             //..
             throw new NotImplementedException();
             int a = 0;
             int b = 0;
             //figure.ChangeMaskByRotating();.ChangeMask(RotateDirection.counterClockWise);
         }
-        public void MoveFigure(Figure figure) 
+        public bool TryMoveFigure(Figure figure, TetrisMap map, MoveDirection moveDirection)
         {
-            var direction = new Point(0, -1);
-            //figure.ChangeCoordinate(direction);
-            //collitionCheck;
+            var figureForMove = (Figure)figure.Clone();
+            figureForMove.Coordinate += moveDirection.GetMovePoint();
+            var collisionResult = _collisionChecker.CheckCollision(map, figureForMove);
+            if (collisionResult)
+            {
+                return false;
+            }
 
+            figure.Coordinate += moveDirection.GetMovePoint();
+            return true;
         }
     }
 }

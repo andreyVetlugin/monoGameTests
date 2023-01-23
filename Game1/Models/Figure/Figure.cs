@@ -39,6 +39,7 @@ namespace Game1.Models.Figure
                 {
                     throw new InvalidDataException("You can change coordinate only by one cell per one step");
                 }
+                _coordinate = value;
             }
         }
         public Figure(FigureType figureType, Point startCoordinate)
@@ -54,7 +55,6 @@ namespace Game1.Models.Figure
 
         private Figure()
         {
-
         }
         
         public List<Point> GetProjectFigureToMap()
@@ -74,8 +74,8 @@ namespace Game1.Models.Figure
         {
             var newFigure = new Figure()
             {
-                FigureMask = (FigureMask)FigureMask.Clone(),
-                Coordinate = _coordinate
+                _figureMask = (FigureMask)FigureMask.Clone(),
+                _coordinate = _coordinate   
             };
             return newFigure;
         }

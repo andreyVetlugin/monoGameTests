@@ -12,7 +12,7 @@ namespace Game1.Models.Map
     {
         private List<List<FieldValue>> _map;
 
-        private Point _mapSize = new Point(10, 22);
+        private Point _mapSize = new Point(10, 20);
 
         public Point GetSize()
         {

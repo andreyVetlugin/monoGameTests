@@ -3,21 +3,26 @@ using Game1.Models.Map;
 using Game1.Views;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Game1
 {
     internal class TetrisDrawer : Game
     {
 
-        private GraphicsDeviceManager _graphics { get; set; }
-        private InGameDisplayInfo _displayInfo { get; set; }
-        private InGameDisplayData _displayData { get; set; } // any property cannt be null.. get instance by default
+        private GraphicsDeviceManager _graphics;
+        private InGameDisplayInfo _displayInfo;
+        private InGameDisplayData _displayData; // any property cannt be null.. get instance by default
 
-        private SpriteBatch _spriteBatch { get; set; }
-        private Texture2D _whiteRectangle { get; set; }
+        private int _millisecondsPerTick = 2000; // TODO: перенести в DI
+        private int _millisecondsInCurrentTick = 0;
 
-        private Point _mapSize { get; set; } = new Point(10, 20);// TODO: передавать через DI с другой старотовой инфой. Класс GameInitInfo?
-        public Point StartDrawPoint { get; set; } = new Point(0, 0); // как и где контролировать? как минимум передавать в конструктор.
+        private SpriteBatch _spriteBatch;
+        private Texture2D _whiteRectangle;
+        private FigureMover _figureMover; // TODO: DI?
+
+        private Point _mapSize = new(10, 20);// TODO: передавать через DI с другой старотовой инфой. Класс GameInitInfo?
+        public Point StartDrawPoint { get; set; } = new(0, 0); // как и где контролировать? как минимум передавать в конструктор.
 
         public TetrisDrawer(InGameDisplayInfo displayInfo, InGameDisplayData displayData /*change to initGameData*/, Point mapSize, Point startDrawPoint)
         {
@@ -27,13 +32,17 @@ namespace Game1
             StartDrawPoint = startDrawPoint;
 
 
-            _graphics = new GraphicsDeviceManager(this);
-            _graphics.PreferredBackBufferWidth = 1200;
-            _graphics.PreferredBackBufferHeight = 800;
+            _graphics = new(this)
+            {
+                PreferredBackBufferWidth = 1200,
+                PreferredBackBufferHeight = 800
+            };
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
             _displayData = displayData;
+            _figureMover = new();
+
 
 
             //_displayData.TetrisFigure = new Figure(FigureType.I, new Point(5, 5));
@@ -45,8 +54,8 @@ namespace Game1
         protected override void LoadContent()
         {
             base.LoadContent();
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _whiteRectangle = new Texture2D(GraphicsDevice, 1, 1);
+            _spriteBatch = new(GraphicsDevice);
+            _whiteRectangle = new(GraphicsDevice, 1, 1);
             _whiteRectangle.SetData(new[] { Color.White });
         }
 
@@ -57,8 +66,45 @@ namespace Game1
             _whiteRectangle.Dispose();
         }
 
+        private void handleKeyboardInput() // TODO: !!!!! в отдельный слой\менеджер\сервис!!!
+        {
+            KeyboardState state = Keyboard.GetState();
+
+            MoveDirection direction;
+
+            if (state.IsKeyDown(Keys.Left))
+            {
+                direction = MoveDirection.Left;
+            }
+            else if (state.IsKeyDown(Keys.Right))
+            {
+                direction = MoveDirection.Right;
+            }
+            else if (state.IsKeyDown(Keys.Down))
+            {
+                direction = MoveDirection.Down;
+            }
+            else
+            {
+                return;
+            }
+
+            _figureMover.TryMoveFigure(_displayData.TetrisFigure, _displayData.TetisMap, direction);
+        }
+
         protected override void Update(GameTime gameTime)
         {
+            // TODO: заменить tickTime на какую-нибудь константу
+            _millisecondsInCurrentTick += gameTime.ElapsedGameTime.Milliseconds;
+            handleKeyboardInput();
+
+            if (_millisecondsInCurrentTick < _millisecondsPerTick)
+            {
+                return;
+            }
+
+            _millisecondsInCurrentTick = 0;
+            _figureMover.TryMoveFigure(_displayData.TetrisFigure, _displayData.TetisMap, MoveDirection.Down);
             base.Update(gameTime);
         }
 

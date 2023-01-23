@@ -15,7 +15,10 @@ namespace Game1.Models.Map
             var filledCellsFromMap = map.GetFilledCellsCoordinates();
             var figurePoints = figure.GetProjectFigureToMap();
 
-            if (figurePoints.Intersect(filledCellsFromMap).Count() != 0)
+            var mapSize = map.GetSize();
+            var existedPointsOutOfMap = figurePoints.Any(p => p.X < 0 || p.Y < 0 || p.X >= mapSize.X || p.Y >= mapSize.Y);
+
+            if (existedPointsOutOfMap || figurePoints.Intersect(filledCellsFromMap).Count() != 0)
             {
                 return true;
             }
