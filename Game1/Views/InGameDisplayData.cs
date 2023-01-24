@@ -12,7 +12,7 @@ namespace Game1.Views
     {
         public FigureType NextFigureType;
         public FigureType SavedFigureType;
-        public TetrisMap TetisMap;
+        public TetrisMap TetrisMap;
         public Figure TetrisFigure;
         public int Score;
         public InGameDisplayData() { }

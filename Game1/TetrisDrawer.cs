@@ -1,4 +1,6 @@
-﻿using Game1.Models.Figure;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Game1.Models.Figure;
 using Game1.Models.Map;
 using Game1.Views;
 using Microsoft.Xna.Framework;
@@ -17,6 +19,15 @@ namespace Game1
         private int _millisecondsPerTick = 2000; // TODO: перенести в DI
         private int _millisecondsInCurrentTick = 0;
 
+        private FigureManager _figureManager = new FigureManager();
+
+        private int _score = 0; //TODO!!
+        private int _scorePerLine = 100;
+        private int _scorePerDoubleLines = 300;
+        private int _scorePerTripleLines = 500;
+        private int _scorePerQuadraLines = 800;
+
+
         private SpriteBatch _spriteBatch;
         private Texture2D _whiteRectangle;
         private FigureMover _figureMover; // TODO: DI?
@@ -24,7 +35,7 @@ namespace Game1
         private Point _mapSize = new(10, 20);// TODO: передавать через DI с другой старотовой инфой. Класс GameInitInfo?
         public Point StartDrawPoint { get; set; } = new(0, 0); // как и где контролировать? как минимум передавать в конструктор.
 
-        public TetrisDrawer(InGameDisplayInfo displayInfo, InGameDisplayData displayData /*change to initGameData*/, Point mapSize, Point startDrawPoint)
+        public TetrisDrawer(InGameDisplayInfo displayInfo, InGameDisplayData displayData /*change to initGameData*/, Point mapSize, Point startDrawPoint, FigureManager FIGUREMANAGER /*TODO ВРЕМЕННО*/)
         {
             _displayInfo = displayInfo;
             //_displayData = displayData;
@@ -43,7 +54,7 @@ namespace Game1
             _displayData = displayData;
             _figureMover = new();
 
-
+            _figureManager = FIGUREMANAGER;
 
             //_displayData.TetrisFigure = new Figure(FigureType.I, new Point(5, 5));
             //_displayData.TetrisFigure.FigureMask.Points.Add(new Point(0, 0));
@@ -66,7 +77,91 @@ namespace Game1
             _whiteRectangle.Dispose();
         }
 
-        private void handleKeyboardInput() // TODO: !!!!! в отдельный слой\менеджер\сервис!!!
+        private void HandleFigureMove(MoveDirection direction)// TODO: придумать нормальное название 
+        {
+            var succesMove = _figureMover.TryMoveFigure(_displayData.TetrisFigure, _displayData.TetrisMap, direction);
+            if (!succesMove && direction == MoveDirection.Down)
+            {
+                HandleFigureFall();
+            }
+        }
+
+        private void MakePointsPartOfMap(List<Point> pointsToAdd) // TODO: все то же
+        {
+            pointsToAdd.ForEach(point => _displayData.TetrisMap[point.X][point.Y] = FieldValue.Block);
+        }
+
+        private void SpawnNextFigure() // TODO вообще убрать, должно где-то обрабатываться внутри какого-то сервиса и отсюда быть доступ только к DisplayData
+        {
+            var spawnStatus = _figureManager.TrySpawnNextFigureToMap(_displayData.TetrisMap);
+            _displayData.TetrisFigure = _figureManager.CurrentFigure;
+        }
+
+        private void HandleFigureFall()
+        {
+            var newPointsCoords = _displayData.TetrisFigure.GetProjectFigureToMap();
+            MakePointsPartOfMap(newPointsCoords);
+
+
+            var newPointsYCoords = newPointsCoords.Select(point => point.Y).Distinct().ToList();
+            var fullLinesCoords = GetFullLinesCoordinates(newPointsYCoords);
+
+            DestroyLines(fullLinesCoords);
+            AddScoreByDestoryedLines(fullLinesCoords.Count);
+            // FallUpperBlocks
+
+            SpawnNextFigure();
+
+        }
+
+        private void DestroyLines(List<int> linesCoords)
+        {
+            foreach (var y in linesCoords)
+            {
+                for (var x = 0; x < _displayData.TetrisMap.GetSize().X; x++)
+                {
+                    _displayData.TetrisMap[x][y] = FieldValue.None;
+                }
+            }
+        }
+
+        private List<int> GetFullLinesCoordinates(List<int> potentialFullLines)
+        {
+            var fullLinesCoords = new List<int>();
+            foreach (var y in potentialFullLines)
+            {
+                var isLineFull = true;
+                for (var x = 0; x < _displayData.TetrisMap.GetSize().X; x++)
+                {
+                    if (_displayData.TetrisMap[x][y] == FieldValue.None)
+                    {
+                        isLineFull = false;
+                        break;
+                    }
+                }
+
+                if (isLineFull)
+                {
+                    fullLinesCoords.Add(y);
+                }
+
+            }
+            return fullLinesCoords;
+        }
+
+        private void AddScoreByDestoryedLines(int linesCount)
+        {
+            _score += linesCount switch
+            {
+                1 => _scorePerLine,
+                2 => _scorePerDoubleLines,
+                3 => _scorePerTripleLines,
+                4 => _scorePerQuadraLines,
+                _ => 0
+            };
+        }
+
+        private void HandleKeyboardInput() // TODO: !!!!! в отдельный слой\менеджер\сервис!!!
         {
             KeyboardState state = Keyboard.GetState();
 
@@ -89,14 +184,15 @@ namespace Game1
                 return;
             }
 
-            _figureMover.TryMoveFigure(_displayData.TetrisFigure, _displayData.TetisMap, direction);
+            HandleFigureMove(direction);
+            //_figureMover.TryMoveFigure(_displayData.TetrisFigure, _displayData.TetrisMap, direction);
         }
 
         protected override void Update(GameTime gameTime)
         {
             // TODO: заменить tickTime на какую-нибудь константу
             _millisecondsInCurrentTick += gameTime.ElapsedGameTime.Milliseconds;
-            handleKeyboardInput();
+            HandleKeyboardInput();
 
             if (_millisecondsInCurrentTick < _millisecondsPerTick)
             {
@@ -104,7 +200,8 @@ namespace Game1
             }
 
             _millisecondsInCurrentTick = 0;
-            _figureMover.TryMoveFigure(_displayData.TetrisFigure, _displayData.TetisMap, MoveDirection.Down);
+            HandleFigureMove(MoveDirection.Down);
+            //_figureMover.TryMoveFigure(_displayData.TetrisFigure, _displayData.TetrisMap, MoveDirection.Down);
             base.Update(gameTime);
         }
 
@@ -113,7 +210,7 @@ namespace Game1
             // Разбить на слои\скрины дерево квадрантов и отрисовывать только часть?
 
             base.Draw(gameTime);
-            GraphicsDevice.Clear(Color.White);
+            GraphicsDevice.Clear(_displayInfo.BackgroundColor);
             _spriteBatch.Begin();
 
             ////////Draw field////////
@@ -135,7 +232,7 @@ namespace Game1
             ////////Draw figure////////
 
 
-            foreach (var figurePoint in _displayData.TetrisFigure.GetProjectFigureToMap())
+            foreach (var figurePoint in _displayData.TetrisFigure.GetProjectFigureToMap())  // TODO вынести метод закраски rectangle отдельный метод
             {
                 var coords = figurePoint * new Point(_displayInfo.CellSize);
                 var drawRectangleCoordinates = new Rectangle(
@@ -143,10 +240,24 @@ namespace Game1
                     StartDrawPoint.Y + coords.Y + _displayInfo.CellThickness,
                     _displayInfo.CellSize - _displayInfo.CellThickness,
                     _displayInfo.CellSize - _displayInfo.CellThickness);
+
                 _spriteBatch.Draw(_whiteRectangle, drawRectangleCoordinates, _displayInfo.FigureBlockColor);
             }
 
 
+            ////////Draw filled map blocks////////
+
+            foreach (var mapBlocksCoords in _displayData.TetrisMap.GetFilledCellsCoordinates())
+            {
+                var coords = mapBlocksCoords * new Point(_displayInfo.CellSize);
+                var drawRectangleCoordinates = new Rectangle(
+                    StartDrawPoint.X + coords.X + _displayInfo.CellThickness,
+                    StartDrawPoint.Y + coords.Y + _displayInfo.CellThickness,
+                    _displayInfo.CellSize - _displayInfo.CellThickness,
+                    _displayInfo.CellSize - _displayInfo.CellThickness);
+
+                _spriteBatch.Draw(_whiteRectangle, drawRectangleCoordinates, _displayInfo.MapBlockColor);
+            }
 
 
             //// Option One (if you have integer size and coordinates)

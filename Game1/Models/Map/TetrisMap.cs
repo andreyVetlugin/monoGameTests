@@ -10,8 +10,7 @@ namespace Game1.Models.Map
 {
     internal class TetrisMap : ICloneable
     {
-        private List<List<FieldValue>> _map;
-
+        private List<List<FieldValue>> _map; //TODO: скорее всего дико неэффективно, переделать на массивы? 
         private Point _mapSize = new Point(10, 20);
 
         public Point GetSize()

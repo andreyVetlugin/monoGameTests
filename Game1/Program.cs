@@ -14,9 +14,10 @@ var firstFigureSpawnStatus = figureManager.TrySpawnNextFigureToMap(map);
 
 
 using var tetrisGame = new TetrisDrawer(
-    new InGameDisplayInfo { BorderCellColor = Color.Red, CellThickness = 1, CellSize = 15, FigureBlockColor = Color.Black },
-    new InGameDisplayData{TetrisFigure = figureManager.CurrentFigure, TetisMap = map}
+    new InGameDisplayInfo { BorderCellColor = Color.Red, CellThickness = 1, CellSize = 15, FigureBlockColor = Color.Black, MapBlockColor = Color.Green, BackgroundColor = Color.Purple },
+    new InGameDisplayData { TetrisFigure = figureManager.CurrentFigure, TetrisMap = map }
     , new Point(10, 20)
-    , new Point(200, 300));
+    , new Point(200, 300)
+    , figureManager);
 tetrisGame.Run();
 //game.Run();
